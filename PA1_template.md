@@ -15,7 +15,8 @@ The code below is to :
       
 
 
-```{r Load_and_preprocess, echo=TRUE, results="hide" }
+
+```r
 rm(list=ls())
 #opts_chunk$set(echo=TRUE, results="hide")   #Set defaults for code chunks
 options(scipen = 1)
@@ -37,15 +38,14 @@ df$interval <- as.integer(60*((df$interval)%/%100) +  #convert interval
                                 (df$interval)%%100)   #to minutes from 00:00
  
 suppressPackageStartupMessages(library(dplyr)) #Load dplyr package 
-
-
 ```
 
 
 ## What is mean total number of steps taken per day?
 
 
-```{r Mean_Total_Steps, echo=TRUE  }
+
+```r
 #find rows tht are complete (i.e have no NAs)
 cc <- complete.cases(df)
 
@@ -61,21 +61,19 @@ steps_by_days <- df1 %>%    #start dplyr piping of df1 dataframe
 hist(steps_by_days$daily_steps, 
      xlab= "Number of Steps ",
      main= "Histogram of Total Number of Steps per day")
-    
-
-
 ```
 
+![plot of chunk Mean_Total_Steps](figure/Mean_Total_Steps-1.png) 
 
-Mean of daily steps is  `r mean(steps_by_days$daily_steps)`.   
-Median of daily steps is  `r median(steps_by_days$daily_steps)`.
+
+Mean of daily steps is  10766.1886792.   
+Median of daily steps is  10765.
 
 
 ## What is the average daily activity pattern?
 
-```{r Avg_daily_pattern, echo=TRUE   }
 
-
+```r
 steps_by_intervals <- df1 %>%    #start dplyr piping of df1 dataframe
       group_by(interval) %>%    #group by interval
       summarise(avg_steps=mean(steps,na.rm=TRUE)) # 
@@ -95,20 +93,20 @@ with(steps_by_intervals, plot(interval, avg_steps,
               ylab="Average Steps", # set y label
               xlab="Minutes from midnight",
               main="Daily Average no. of steps in 5 minute intervals"))   
-
-
-
 ```
 
-The maximum of average daily steps taken was `r max_steps` at interval 
-`r interval_max`.
+![plot of chunk Avg_daily_pattern](figure/Avg_daily_pattern-1.png) 
+
+The maximum of average daily steps taken was 206.1698113 at interval 
+835.
 
 ## Imputing missing values
 
+To impute the missing values:
 
 
 
-```{r Impute1, echo=TRUE,  }
+```r
 options(scipen = 1)
 #calculate number of observations  with NAs in the original dataset 
 missing_vals<- sum(is.na(df)) #using the original dataframe with the NAs
@@ -144,15 +142,12 @@ steps_by_days_new <- df %>%    #start dplyr piping of df1 dataframe
 hist(steps_by_days_new$daily_steps, 
      xlab= "Number of Steps ",
      main= "Histogram of Total Number of Steps per day (with imputation)")
-    
-
-
-
-      
 ```
 
+![plot of chunk Impute1](figure/Impute1-1.png) 
 
-Number of missing values in original dataset is `r missing_vals`.
+
+Number of missing values in original dataset is 2304.
 
 
 Since there seems to be a daily pattern in number of steps, our strategy is to 
@@ -161,12 +156,12 @@ interval.
 
 
 After imputation:  
-Mean of daily steps is  `r mean(steps_by_days_new$daily_steps)`.   
-Median of daily steps is  `r median(steps_by_days_new$daily_steps)`.
+Mean of daily steps is  10766.1886792.   
+Median of daily steps is  10766.1886792.
 
 Prior to imputation:  
-Mean of daily steps is  `r mean(steps_by_days$daily_steps)`.   
-Median of daily steps is  `r median(steps_by_days$daily_steps)`.
+Mean of daily steps is  10766.1886792.   
+Median of daily steps is  10765.
 
 Initial conclusion based on this:  
 The new mean (i.e. mean after imputation) is exactly the same value as the
@@ -186,8 +181,8 @@ for weekeday and weekend.
 
 
 
-```{r Weekday_Weekend, echo=TRUE,  }
 
+```r
 #add a variable called wd_or_we to denote if the day is a weekday or weekend
 df$wd_or_we <- ifelse(weekdays(df$date) %in% c("Sunday", "Saturday" ) , 
                       "Weekend", "Weekday"    )
@@ -227,9 +222,9 @@ xyplot(steps_by_intervals_new$avg_steps ~ steps_by_intervals_new$interval
        type="l",
        xlab="Minutes from midnight",
        ylab="Daily Average no. of steps in 5 minute intervals")
-
-
 ```
+
+![plot of chunk Weekday_Weekend](figure/Weekday_Weekend-1.png) 
 
 There plots are not identical- whether the differences are significant will 
 require more analysis. 
