@@ -1,17 +1,11 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
-
 
 ## Loading and preprocessing the data
 The code below is to :  
 1) Check if the zip file containing data file exists.  
 2) If the zip file exists, unzip.  
 3) Read in the data file into a dataframe.  
-4) Initial Process/Transformation of data 
+4) Initial Process/Transformation of data including converting date field to 
+correct format and calculating the interval field to minutes since midnight.  
       
 
 
@@ -19,7 +13,7 @@ The code below is to :
 rm(list=ls())
 #opts_chunk$set(echo=TRUE, results="hide")   #Set defaults for code chunks
 options(scipen = 1)
-par(mfrow=c(1,1))
+par(mfrow=c(1,1)) #set plot parameter
 if(!file.exists("activity.zip")){stop("Activity file not found")}
 
 
@@ -44,6 +38,19 @@ suppressPackageStartupMessages(library(dplyr)) #Load dplyr package
 
 ## What is mean total number of steps taken per day?
 
+To determine this information, the code below does the following: 
+1) Identify  observations that do not have null values for steps.  
+2) Create a copy of the dataset without the null value onservations.  
+3) Using the dplyr package data manipulation pipeline, group the day and 
+summarise to calculate the daily total for steps taken. This basically adds up 
+all the steps walked in the different  intervals for each day.  
+4) The sumamrised dataset has the date and the total number of steps taken that 
+day.   
+5) Plot a histogram showing the distribution of total number of steps taken each
+day.   
+6) Finally, we calculate the mean and median for the daily total steps. 
+
+(For Mean and Median Daily Steps, see lines  immediately below the plot) 
 
 ```{r Mean_Total_Steps, echo=TRUE  }
 #find rows tht are complete (i.e have no NAs)
@@ -54,7 +61,7 @@ df1 <- df[cc,]
 
 steps_by_days <- df1 %>%    #start dplyr piping of df1 dataframe
       group_by(date) %>%    #group date
-      summarise(daily_steps=sum(steps,na.rm=TRUE)) # 
+      summarise(daily_steps=sum(steps,na.rm=TRUE)) # Redundant na.rm clause
 
 
 # Plot histogram of daily steps 
@@ -72,6 +79,15 @@ Median of daily steps is  `r median(steps_by_days$daily_steps)`.
 
 
 ## What is the average daily activity pattern?
+For this analysis we use R code below to do the following:  
+
+1) Calculate the average number of steps walked during the same 
+time-slot/interval for all days.  
+2) Determine the highest average number of steps among the differnt days using 
+the max function.  
+3) Determine the interval where the max happens.   
+
+
 
 ```{r Avg_daily_pattern, echo=TRUE   }
 
@@ -105,7 +121,12 @@ The maximum of average daily steps taken was `r max_steps` at interval
 
 ## Imputing missing values
 
-
+For this analysis, we:  
+1) Calcualte number of missing records in original dataset(df).  
+2) For each record in the data with missing steps, replace the value (NA) 
+with the average steps for that particular interval from the rest of the days.  
+3) Recalculate the daily total steps using the updated dataset.  
+4) Plot histogram as before.
 
 
 ```{r Impute1, echo=TRUE,  }
@@ -114,7 +135,7 @@ options(scipen = 1)
 missing_vals<- sum(is.na(df)) #using the original dataframe with the NAs
 
 
-#percent_missing <- 100*missing_vals/dim(df) ## check what % of data is missing[]
+#percent_missing <- 100*missing_vals/dim(df) ## calc % of data is missing
 
 # For observations that have null values for step variable...replace with mean
 # There is probably a better way to do this using apply/transform...
@@ -231,7 +252,7 @@ xyplot(steps_by_intervals_new$avg_steps ~ steps_by_intervals_new$interval
 
 ```
 
-There plots are not identical- whether the differences are significant will 
+These plots are not identical- whether the differences are significant will 
 require more analysis. 
 
 Some initial observations based on the Weekday Vs Weekend plot:  
