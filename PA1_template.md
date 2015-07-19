@@ -191,6 +191,9 @@ tilted closer to the opiginal mean. Further investigation required to confirm
 if using a different imputation strategy (say using median steps for missing 
 intervals) would have affected differently.
 
+Also, from the new histogram, the frequency of the bin containing the median
+and mean values (i.e. the 10000-15000 steps) has increased from over 25% to 
+close to 35%. 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
@@ -212,29 +215,25 @@ steps_by_intervals_new <- df %>%    #start dplyr piping of df dataframe
       group_by(wd_or_we,interval) %>%        #group by weekday flag, interval
       summarise(avg_steps=mean(steps,na.rm=TRUE)) #no NAs anyway 
 
-
-#with(steps_by_intervals_new, plot(interval, avg_steps, 
+# Since the sample graph looks like it was generated from latticeplot, plotting
+# this new time series using latticeplot.
+# Experimental/debugging section for comparison to previous plot and has been 
+# commented out
+# with(steps_by_intervals_new, plot(interval, avg_steps, 
 #              type ="l",            # line graph 
 #              ylab="Average Steps", # set y label
 #              xlab="Minutes from midnight",
 #              main="Daily Average no. of steps in 5 minute intervals"))
-
-
-
 #
 #par(mfrow=c(2,1))
-
 #with(subset(steps_by_intervals_new, wd_or_we == "Weekday"),
 #      plot(interval, avg_steps, type="l", main="Weekday",
 #            ylab="Average Steps", 
 #            xlab="Minutes from midnight"
 #                 ))
-
 #with(subset(steps_by_intervals_new, wd_or_we == "Weekend"),
 #     plot(interval, avg_steps, type="l", main="Weekend"))
 
-
-#sample graph looks like it was generated from latticeplot
 
 library(lattice)
 xyplot(steps_by_intervals_new$avg_steps ~ steps_by_intervals_new$interval
